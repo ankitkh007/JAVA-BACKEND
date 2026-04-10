@@ -1,10 +1,21 @@
 package com.ankit.student_management_api.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "Students")
 public class Student {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(nullable = false)
     private Integer roll;
+    @Column(nullable = false)
     private String name;
+    @Column(nullable = false)
     private String branch;
+    @Column(nullable = false)
     private String section;
 
     // Default Contructor
