@@ -9,7 +9,6 @@ public class StudentMapper {
     public static Student mapRequestDTOToEntity(StudentRequest request) {
         // Request DTO --> Entity
         Student student = new Student();
-        student.setId(request.getId());
         student.setRoll(request.getRoll());
         student.setName(request.getName());
         student.setBranch(request.getBranch());

@@ -3,9 +3,6 @@ package com.ankit.student_management_api.dto;
 import jakarta.validation.constraints.*;
 
 public class StudentRequest {
-    @NotNull(message = "Id cannot be null!")
-    private Integer id;
-
     @NotNull(message = "Roll cannot be null!")
     @Min(value = 1, message = "Roll should be >=1")
     private Integer roll;
@@ -25,14 +22,6 @@ public class StudentRequest {
     }
 
     // Getters & Setters
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public Integer getRoll() {
         return roll;
     }
