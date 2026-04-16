@@ -3,6 +3,9 @@ package com.ankit.student_management_api.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.ankit.student_management_api.dto.StudentRequest;
@@ -23,12 +26,15 @@ public class StudentService {
     }
 
     // GET all students
-    public List<StudentResponse> getAllStudents() {
-        List<Student> students = repository.findAll();
+    public List<StudentResponse> getAllStudentsWithPagination(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Student> studentPage = repository.findAll(pageable);
+        // List<Student> students = repository.findAll();
 
         // Entity --> Response DTO
         List<StudentResponse> responseList = new ArrayList<>();
-        for (Student student : students) {
+        for (Student student : studentPage.getContent()) { // Use studentPage.getContent() to get the list of students
             responseList.add(StudentMapper.mapEntityToResponseDTO(student));
         }
         return responseList;
