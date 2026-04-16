@@ -9,13 +9,13 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
+    @Column(name = "student_roll", nullable = false)
     private Integer roll;
-    @Column(nullable = false)
+    @Column(name = "student_name", nullable = false, length = 100)
     private String name;
-    @Column(nullable = false)
+    @Column(name = "student_branch", nullable = false)
     private String branch;
-    @Column(nullable = false)
+    @Column(name = "student_section", nullable = false)
     private String section;
 
     // Default Contructor
