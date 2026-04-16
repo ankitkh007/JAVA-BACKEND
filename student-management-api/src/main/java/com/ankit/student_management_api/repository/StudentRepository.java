@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface StudentRepository extends JpaRepository<Student, Integer> {
-
+    boolean existsByRoll(Integer roll);
 }
 // private final Map<Integer, Student> students = new ConcurrentHashMap<>();
 

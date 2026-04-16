@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.ankit.student_management_api.dto.StudentRequest;
 import com.ankit.student_management_api.dto.StudentResponse;
+import com.ankit.student_management_api.exception.DuplicateStudentException;
 import com.ankit.student_management_api.exception.StudentNotFoundException;
 import com.ankit.student_management_api.model.Student;
 import com.ankit.student_management_api.repository.StudentRepository;
@@ -50,6 +51,9 @@ public class StudentService {
         // Request DTO --> Entity
         Student student = StudentMapper.mapRequestDTOToEntity(request);
 
+        if (repository.existsByRoll(student.getRoll()))
+            throw new DuplicateStudentException("Student Already Exists with roll: " +
+                    request.getRoll());
         Student saved = repository.save(student);
         // if (!created)
         // throw new DuplicateStudentException("Student Already Exists with id: " +
