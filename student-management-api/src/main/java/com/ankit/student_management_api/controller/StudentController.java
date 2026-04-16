@@ -42,6 +42,13 @@ public class StudentController {
         return ResponseEntity.ok(response); // 200 OK
     }
 
+    // GET student by Name
+    @GetMapping("/name/{name}")
+    public ResponseEntity<List<StudentResponse>> getStudentByNameCustom(@PathVariable("name") String name) {
+        List<StudentResponse> responseList = service.getStudentByNameCustom(name);
+        return ResponseEntity.ok(responseList);
+    }
+
     // Create Student (Save)
     @PostMapping
     public ResponseEntity<StudentResponse> createStudent(@Valid @RequestBody StudentRequest request) {

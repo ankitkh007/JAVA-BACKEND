@@ -46,6 +46,21 @@ public class StudentService {
         return response;
     }
 
+    // GET student by name
+    public List<StudentResponse> getStudentByNameCustom(String name) {
+        List<Student> students = repository.findByNameCustom(name);
+        if (students.isEmpty())
+            throw new StudentNotFoundException("Student not found with name: " + name);
+
+        // Entity --> Response DTO
+        List<StudentResponse> responseList = new ArrayList<>();
+        for (Student student : students) {
+            responseList.add(StudentMapper.mapEntityToResponseDTO(student));
+        }
+
+        return responseList;
+    }
+
     // Create student (save)
     public StudentResponse createStudent(StudentRequest request) {
         // Request DTO --> Entity
