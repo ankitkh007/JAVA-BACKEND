@@ -15,6 +15,7 @@ import com.ankit.student_management_api.service.StudentService;
 
 import jakarta.validation.Valid;
 
+import com.ankit.student_management_api.dto.PaginatedResponse;
 import com.ankit.student_management_api.dto.StudentRequest;
 import com.ankit.student_management_api.dto.StudentResponse;
 
@@ -31,9 +32,9 @@ public class StudentController {
 
     // GET all students
     @GetMapping("/paginated")
-    public ResponseEntity<List<StudentResponse>> getAllStudentsPaginated(@RequestParam int page,
+    public ResponseEntity<PaginatedResponse<StudentResponse>> getAllStudentsPaginated(@RequestParam int page,
             @RequestParam int size) {
-        List<StudentResponse> responseList = service.getAllStudentsWithPagination(page, size);
+        PaginatedResponse<StudentResponse> responseList = service.getAllStudentsWithPagination(page, size);
         return ResponseEntity.ok(responseList); // 200 OK
     }
 

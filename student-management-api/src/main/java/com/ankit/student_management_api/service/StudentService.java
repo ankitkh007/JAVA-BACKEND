@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.ankit.student_management_api.dto.PaginatedResponse;
 import com.ankit.student_management_api.dto.StudentRequest;
 import com.ankit.student_management_api.dto.StudentResponse;
 import com.ankit.student_management_api.exception.DuplicateStudentException;
@@ -27,18 +28,25 @@ public class StudentService {
     }
 
     // GET all students
-    public List<StudentResponse> getAllStudentsWithPagination(int page, int size) {
+    public PaginatedResponse<StudentResponse> getAllStudentsWithPagination(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("name"));
 
         Page<Student> studentPage = repository.findAll(pageable);
-        // List<Student> students = repository.findAll();
 
         // Entity --> Response DTO
-        List<StudentResponse> responseList = new ArrayList<>();
+        List<StudentResponse> content = new ArrayList<>();
         for (Student student : studentPage.getContent()) { // Use studentPage.getContent() to get the list of students
-            responseList.add(StudentMapper.mapEntityToResponseDTO(student));
+            content.add(StudentMapper.mapEntityToResponseDTO(student));
         }
-        return responseList;
+
+        PaginatedResponse<StudentResponse> response = new PaginatedResponse<>();
+        response.setContent(content);
+        response.setPage(page);
+        response.setSize(size);
+        response.setTotalElements(studentPage.getTotalElements());
+        response.setTotalPages(studentPage.getTotalPages());
+
+        return response;
     }
 
     // GET student by id
