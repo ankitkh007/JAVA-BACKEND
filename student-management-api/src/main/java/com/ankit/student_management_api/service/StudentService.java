@@ -16,8 +16,13 @@ import com.ankit.student_management_api.exception.DuplicateStudentException;
 import com.ankit.student_management_api.exception.StudentNotFoundException;
 import com.ankit.student_management_api.model.Student;
 import com.ankit.student_management_api.repository.StudentRepository;
+
+import lombok.extern.slf4j.Slf4j;
+
 import com.ankit.student_management_api.mapper.*;
 
+@Slf4j // This generates: private static final Logger log =
+       // LoggerFactory.getLogger(ClassName.class);
 @Service
 public class StudentService {
     private final StudentRepository repository;
@@ -29,6 +34,9 @@ public class StudentService {
 
     // GET all students
     public PaginatedResponse<StudentResponse> getAllStudentsWithPagination(int page, int size) {
+        // -----LOG INFO-----
+        log.info("Fetching students with pagination: page={}, size={}", page, size);
+
         Pageable pageable = PageRequest.of(page, size, Sort.by("name"));
 
         Page<Student> studentPage = repository.findAll(pageable);
@@ -51,10 +59,13 @@ public class StudentService {
 
     // GET student by id
     public StudentResponse getStudentById(Integer id) {
+        // -----LOG INFO-----
+        log.info("Fetching student with id: {}", id);
+        if (!repository.existsById(id))
+            log.error("Student Not Found with id: {}", id); // -----LOG ERROR-----
+
         Student student = repository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException("Student Not Found with id: " + id));
-        // if (student == null)
-        // throw new StudentNotFoundException("Student Not Found with id: " + id);
 
         // Entity --> Response DTO
         StudentResponse response = StudentMapper.mapEntityToResponseDTO(student);
@@ -63,9 +74,14 @@ public class StudentService {
 
     // GET student by name
     public List<StudentResponse> getStudentByNameCustom(String name) {
+        // -----LOG INFO-----
+        log.info("Fetching students with name: {}", name);
+
         List<Student> students = repository.findByNameCustom(name);
-        if (students.isEmpty())
-            throw new StudentNotFoundException("Student not found with name: " + name);
+        if (students.isEmpty()) {
+            log.error("Student Not Found with name: {}", name); // -----LOG ERROR-----
+            throw new StudentNotFoundException("Student Not Found with name: " + name);
+        }
 
         // Entity --> Response DTO
         List<StudentResponse> responseList = new ArrayList<>();
@@ -78,16 +94,17 @@ public class StudentService {
 
     // Create student (save)
     public StudentResponse createStudent(StudentRequest request) {
+        // -----LOG INFO-----
+        log.info("Creating student with roll: {}", request.getRoll());
+
         // Request DTO --> Entity
         Student student = StudentMapper.mapRequestDTOToEntity(request);
 
-        if (repository.existsByRoll(student.getRoll()))
-            throw new DuplicateStudentException("Student Already Exists with roll: " +
-                    request.getRoll());
+        if (repository.existsByRoll(student.getRoll())) {
+            log.error("Student Already Exists with roll: {}", request.getRoll()); // -----LOG ERROR-----
+            throw new DuplicateStudentException("Student Already Exists with roll: " + request.getRoll());
+        }
         Student saved = repository.save(student);
-        // if (!created)
-        // throw new DuplicateStudentException("Student Already Exists with id: " +
-        // request.getId());
 
         // Entity --> Response DTO
         StudentResponse response = StudentMapper.mapEntityToResponseDTO(saved);
@@ -96,8 +113,13 @@ public class StudentService {
 
     // Delete student
     public void deleteStudent(Integer id) {
-        if (!repository.existsById(id))
+        // -----LOG INFO-----
+        log.info("Deleting student with id: {}", id);
+
+        if (!repository.existsById(id)) {
+            log.error("Student Not Found with id: {}", id); // -----LOG ERROR-----
             throw new StudentNotFoundException("Student Not Found with id: " + id);
+        }
 
         repository.deleteById(id);
     }
