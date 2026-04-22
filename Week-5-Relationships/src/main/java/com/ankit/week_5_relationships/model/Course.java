@@ -9,7 +9,7 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "Course_title", nullable = false, length = 100)
+    @Column(name = "course_title", nullable = false, length = 100)
     private String title;
 
     @ManyToOne
