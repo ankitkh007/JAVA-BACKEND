@@ -23,7 +23,7 @@ public class StudentService {
 
     // Get all students
     public List<StudentResponse> getAllStudents() {
-        List<Student> students = repository.findAll();
+        List<Student> students = repository.findAllWithCourses();
 
         // Entity --> Response DTO
         List<StudentResponse> responseList = new ArrayList<>();
