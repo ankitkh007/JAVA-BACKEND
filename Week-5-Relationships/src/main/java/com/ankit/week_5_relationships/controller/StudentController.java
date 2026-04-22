@@ -1,7 +1,6 @@
 package com.ankit.week_5_relationships.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ankit.week_5_relationships.dto.CourseRequest;
@@ -29,9 +29,9 @@ public class StudentController {
     }
 
     // Get All Students
-    @GetMapping
-    public ResponseEntity<List<StudentResponse>> getAllStudents() {
-        List<StudentResponse> response = service.getAllStudents();
+    @GetMapping("/paginated")
+    public ResponseEntity<Page<StudentResponse>> getAllStudents(@RequestParam int page, @RequestParam int size) {
+        Page<StudentResponse> response = service.getAllStudents(page, size);
         return ResponseEntity.ok(response); // 200 OK
     }
 

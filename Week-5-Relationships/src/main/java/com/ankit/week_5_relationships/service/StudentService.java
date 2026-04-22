@@ -1,5 +1,6 @@
 package com.ankit.week_5_relationships.service;
 
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
@@ -10,28 +11,56 @@ import com.ankit.week_5_relationships.exception.StudentNotFoundException;
 import com.ankit.week_5_relationships.mapper.StudentMapper;
 import com.ankit.week_5_relationships.model.Course;
 import com.ankit.week_5_relationships.model.Student;
+import com.ankit.week_5_relationships.repository.CourseRepository;
 import com.ankit.week_5_relationships.repository.StudentRepository;
 
 @Service
 public class StudentService {
     private final StudentRepository repository;
+    private final CourseRepository courseRepository;
 
     // Constructor Injection
-    public StudentService(StudentRepository repository) {
+    public StudentService(StudentRepository repository, CourseRepository cRepository) {
         this.repository = repository;
+        this.courseRepository = cRepository;
     }
 
     // Get all students
-    public List<StudentResponse> getAllStudents() {
-        List<Student> students = repository.findAllWithCourses();
+    public Page<StudentResponse> getAllStudents(int page, int size) {
+        // First Getting All Students(paginated)
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Student> studentPage = repository.findAll(pageable);
+        List<Student> students = studentPage.getContent();
 
-        // Entity --> Response DTO
-        List<StudentResponse> responseList = new ArrayList<>();
-        for (Student student : students) {
-            responseList.add(StudentMapper.mapEntityToResponseDto(student));
+        // Now extracting student Ids for All Students
+        List<Integer> studentIds = students.stream().map(Student::getId).toList();
+
+        // Edge-case handling; what is students list is empty
+        if (studentIds.isEmpty())
+            return new PageImpl<>(List.of(), pageable, studentPage.getTotalElements());
+
+        // Secondly getting all courses for each student Id
+        List<Course> courses = courseRepository.findByStudentIds(studentIds);
+
+        // Now grouping Courses by student
+        Map<Integer, List<Course>> courseMap = new HashMap<>();
+        for (Course course : courses) {
+            Integer studentId = course.getStudent().getId();
+
+            courseMap.computeIfAbsent(studentId, k -> new ArrayList<>()).add(course);
         }
 
-        return responseList;
+        // Now attaching course with respective student Id
+        for (Student student : students) {
+            List<Course> studentCourse = courseMap.get(student.getId());
+
+            student.setCourses(studentCourse != null ? studentCourse : new ArrayList<>());
+        }
+
+        // Entity --> Response DTO
+        List<StudentResponse> responseList = students.stream().map(StudentMapper::mapEntityToResponseDto).toList();
+
+        return new PageImpl<>(responseList, pageable, studentPage.getTotalElements());
     }
 
     // Get student By Id
