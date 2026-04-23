@@ -4,8 +4,9 @@ import java.util.*;
 
 import com.ankit.week_5_relationships.dto.CourseRequest;
 import com.ankit.week_5_relationships.dto.CourseResponse;
+import com.ankit.week_5_relationships.dto.StudentBasicResponse;
 import com.ankit.week_5_relationships.dto.StudentRequest;
-import com.ankit.week_5_relationships.dto.StudentResponse;
+import com.ankit.week_5_relationships.dto.StudentDetailedResponse;
 import com.ankit.week_5_relationships.model.Course;
 import com.ankit.week_5_relationships.model.Student;
 
@@ -28,8 +29,8 @@ public class StudentMapper {
         return student;
     }
 
-    public static StudentResponse mapEntityToResponseDto(Student student) {
-        StudentResponse response = new StudentResponse();
+    public static StudentDetailedResponse mapEntityToDetailed(Student student) {
+        StudentDetailedResponse response = new StudentDetailedResponse();
 
         response.setId(student.getId());
         response.setName(student.getName());
@@ -47,4 +48,13 @@ public class StudentMapper {
 
         return response;
     }
+
+    public static StudentBasicResponse mapEntityToBasic(Student student) {
+        StudentBasicResponse response = new StudentBasicResponse();
+
+        response.setId(student.getId());
+        response.setName(student.getName());
+        return response;
+    }
+
 }

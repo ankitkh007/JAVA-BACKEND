@@ -2,13 +2,13 @@ package com.ankit.week_5_relationships.dto;
 
 import java.util.*;
 
-public class StudentResponse {
+public class StudentDetailedResponse {
     private Integer id;
     private String name;
     private List<CourseResponse> courses;
 
     // Default Constructor
-    public StudentResponse() {
+    public StudentDetailedResponse() {
 
     }
 

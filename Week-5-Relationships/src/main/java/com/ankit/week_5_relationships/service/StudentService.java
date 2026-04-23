@@ -4,9 +4,12 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
+import com.ankit.week_5_relationships.dto.ApiResponse;
 import com.ankit.week_5_relationships.dto.CourseRequest;
+import com.ankit.week_5_relationships.dto.PaginatedResponse;
+import com.ankit.week_5_relationships.dto.StudentBasicResponse;
 import com.ankit.week_5_relationships.dto.StudentRequest;
-import com.ankit.week_5_relationships.dto.StudentResponse;
+import com.ankit.week_5_relationships.dto.StudentDetailedResponse;
 import com.ankit.week_5_relationships.exception.StudentNotFoundException;
 import com.ankit.week_5_relationships.mapper.StudentMapper;
 import com.ankit.week_5_relationships.model.Course;
@@ -25,8 +28,10 @@ public class StudentService {
         this.courseRepository = cRepository;
     }
 
+    // -----------------------------------------------------------------------
+    // DETAILED STUDENT RESPONSE
     // Get all students
-    public Page<StudentResponse> getAllStudents(int page, int size) {
+    public PaginatedResponse<StudentDetailedResponse> getStudentsWithCourses(int page, int size) {
         // First Getting All Students(paginated)
         Pageable pageable = PageRequest.of(page, size);
         Page<Student> studentPage = repository.findAll(pageable);
@@ -37,7 +42,8 @@ public class StudentService {
 
         // Edge-case handling; what is students list is empty
         if (studentIds.isEmpty())
-            return new PageImpl<>(List.of(), pageable, studentPage.getTotalElements());
+            return new PaginatedResponse<>(List.of(), page, size, studentPage.getTotalElements(),
+                    studentPage.getTotalPages());
 
         // Secondly getting all courses for each student Id
         List<Course> courses = courseRepository.findByStudentIds(studentIds);
@@ -58,32 +64,47 @@ public class StudentService {
         }
 
         // Entity --> Response DTO
-        List<StudentResponse> responseList = students.stream().map(StudentMapper::mapEntityToResponseDto).toList();
+        List<StudentDetailedResponse> responseList = students.stream().map(StudentMapper::mapEntityToDetailed)
+                .toList();
 
-        return new PageImpl<>(responseList, pageable, studentPage.getTotalElements());
+        return new PaginatedResponse<>(responseList, page, size, studentPage.getTotalElements(),
+                studentPage.getTotalPages());
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // BASIC STUDENT RESPONSE
+    public PaginatedResponse<StudentBasicResponse> getBasicStudents(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Student> studentPage = repository.findAll(pageable);
+        List<Student> students = studentPage.getContent();
+
+        List<StudentBasicResponse> responseList = students.stream().map(StudentMapper::mapEntityToBasic).toList();
+
+        return new PaginatedResponse<>(responseList, page, size, studentPage.getTotalElements(),
+                studentPage.getTotalPages());
     }
 
     // Get student By Id
-    public StudentResponse getStudentById(Integer id) {
+    public StudentDetailedResponse getStudentById(Integer id) {
         Student student = repository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException("Student Not found with id: " + id));
         // Entity --> Response DTO
-        StudentResponse response = StudentMapper.mapEntityToResponseDto(student);
+        StudentDetailedResponse response = StudentMapper.mapEntityToDetailed(student);
         return response;
     }
 
     // Create student
-    public StudentResponse createStudent(StudentRequest request) {
+    public StudentDetailedResponse createStudent(StudentRequest request) {
         // Request DTO --> Entity
         Student student = StudentMapper.mapRequestDtoToEntity(request);
         Student saved = repository.save(student);
         // Entity --> Response DTO
-        StudentResponse response = StudentMapper.mapEntityToResponseDto(saved);
+        StudentDetailedResponse response = StudentMapper.mapEntityToDetailed(saved);
         return response;
     }
 
     // Attach course to a student
-    public StudentResponse attachCourse(Integer id, CourseRequest courseRequest) {
+    public StudentDetailedResponse attachCourse(Integer id, CourseRequest courseRequest) {
         Student student = repository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException("Student Not found with id: " + id));
 
@@ -97,7 +118,7 @@ public class StudentService {
 
         Student saved = repository.save(student); // Very Important line
 
-        StudentResponse response = StudentMapper.mapEntityToResponseDto(saved);
+        StudentDetailedResponse response = StudentMapper.mapEntityToDetailed(saved);
 
         return response;
     }
