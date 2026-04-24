@@ -98,6 +98,8 @@ public class StudentService {
         // validating duplicate courses
         if (!validateCourses(request.getCourses()))
             throw new BusinessException("Duplicate course title not allowed");
+        else if (request.getCourses().size() > 5)
+            throw new BusinessException("Maximum 5 courses allowed");
 
         // Request DTO --> Entity
         Student student = StudentMapper.mapRequestDtoToEntity(request);
