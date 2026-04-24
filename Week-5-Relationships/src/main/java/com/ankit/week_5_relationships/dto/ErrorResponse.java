@@ -6,7 +6,7 @@ public class ErrorResponse {
     private LocalDateTime timestamp;
     private int status;
     private String error;
-    private String message;
+    private Object message;
     private String path;
 
     // Default Constructor
@@ -39,11 +39,11 @@ public class ErrorResponse {
         this.error = error;
     }
 
-    public String getMessage() {
+    public Object getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(Object message) {
         this.message = message;
     }
 

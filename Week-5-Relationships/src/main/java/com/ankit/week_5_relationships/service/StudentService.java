@@ -9,6 +9,7 @@ import com.ankit.week_5_relationships.dto.PaginatedResponse;
 import com.ankit.week_5_relationships.dto.StudentBasicResponse;
 import com.ankit.week_5_relationships.dto.StudentRequest;
 import com.ankit.week_5_relationships.dto.StudentDetailedResponse;
+import com.ankit.week_5_relationships.exception.BusinessException;
 import com.ankit.week_5_relationships.exception.StudentNotFoundException;
 import com.ankit.week_5_relationships.mapper.StudentMapper;
 import com.ankit.week_5_relationships.model.Course;
@@ -86,7 +87,7 @@ public class StudentService {
     // Get student By Id
     public StudentDetailedResponse getStudentById(Integer id) {
         Student student = repository.findById(id)
-                .orElseThrow(() -> new StudentNotFoundException("Student Not found with id: " + id));
+                .orElseThrow(() -> new StudentNotFoundException("Student not found"));
         // Entity --> Response DTO
         StudentDetailedResponse response = StudentMapper.mapEntityToDetailed(student);
         return response;
@@ -94,6 +95,10 @@ public class StudentService {
 
     // Create student
     public StudentDetailedResponse createStudent(StudentRequest request) {
+        // validating duplicate courses
+        if (!validateCourses(request.getCourses()))
+            throw new BusinessException("Duplicate course title not allowed");
+
         // Request DTO --> Entity
         Student student = StudentMapper.mapRequestDtoToEntity(request);
         Student saved = repository.save(student);
@@ -105,7 +110,7 @@ public class StudentService {
     // Attach course to a student
     public StudentDetailedResponse attachCourse(Integer id, CourseRequest courseRequest) {
         Student student = repository.findById(id)
-                .orElseThrow(() -> new StudentNotFoundException("Student Not found with id: " + id));
+                .orElseThrow(() -> new StudentNotFoundException("Student not found"));
 
         Course course = new Course();
         course.setTitle(courseRequest.getTitle());
@@ -120,5 +125,16 @@ public class StudentService {
         StudentDetailedResponse response = StudentMapper.mapEntityToDetailed(saved);
 
         return response;
+    }
+
+    // validates Duplicate course title for Request
+    private boolean validateCourses(List<CourseRequest> courses) {
+        Set<String> titles = new HashSet<>();
+
+        for (CourseRequest courseTitle : courses) {
+            if (!titles.add(courseTitle.getTitle().toLowerCase()))
+                return false;
+        }
+        return true;
     }
 }
