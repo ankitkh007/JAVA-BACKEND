@@ -96,9 +96,9 @@ public class StudentService {
     // Create student
     public StudentDetailedResponse createStudent(StudentRequest request) {
         // validating duplicate courses
-        if (!validateCourses(request.getCourses()))
+        if (!validateDuplicateCourses(request.getCourses()))
             throw new BusinessException("Duplicate course title not allowed");
-        else if (request.getCourses().size() > 5)
+        if (request.getCourses().size() > 5)
             throw new BusinessException("Maximum 5 courses allowed");
 
         // Request DTO --> Entity
@@ -113,6 +113,15 @@ public class StudentService {
     public StudentDetailedResponse attachCourse(Integer id, CourseRequest courseRequest) {
         Student student = repository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException("Student not found"));
+
+        // Validate courseRequest
+        List<Course> existingCourses = student.getCourses();
+        for (Course existing : existingCourses) {
+            if (existing.getTitle().equalsIgnoreCase(courseRequest.getTitle()))
+                throw new BusinessException("Course already exists for this student");
+        }
+        if (existingCourses.size() >= 5)
+            throw new BusinessException("Maximum 5 courses allowed");
 
         Course course = new Course();
         course.setTitle(courseRequest.getTitle());
@@ -130,7 +139,7 @@ public class StudentService {
     }
 
     // validates Duplicate course title for Request
-    private boolean validateCourses(List<CourseRequest> courses) {
+    private boolean validateDuplicateCourses(List<CourseRequest> courses) {
         Set<String> titles = new HashSet<>();
 
         for (CourseRequest courseTitle : courses) {
