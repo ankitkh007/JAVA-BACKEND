@@ -2,6 +2,8 @@ package com.ankit.week_5_relationships.service;
 
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.*;
 
 import com.ankit.week_5_relationships.dto.CourseRequest;
@@ -93,7 +95,9 @@ public class StudentService {
         return response;
     }
 
+    // -------------------------------------------------------------------------------------------------
     // Create student
+    @Transactional
     public StudentDetailedResponse createStudent(StudentRequest request) {
         // validating duplicate courses
         if (!validateDuplicateCourses(request.getCourses()))
@@ -110,6 +114,7 @@ public class StudentService {
     }
 
     // Attach course to a student
+    @Transactional
     public StudentDetailedResponse attachCourse(Integer id, CourseRequest courseRequest) {
         Student student = repository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException("Student not found"));
