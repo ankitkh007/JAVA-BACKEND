@@ -1,5 +1,7 @@
 package com.ankit.week_5_relationships.service;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +35,8 @@ public class StudentService {
     // -----------------------------------------------------------------------
     // DETAILED STUDENT RESPONSE
     // Get all students
+    // value=students-->cacheName; purpose-->paginated list
+    @Cacheable(value = "students", key = "#page + '-' + #size + '-' + #includeCourses")
     public PaginatedResponse<StudentDetailedResponse> getStudentsWithCourses(int page, int size) {
         // First Getting All Students(paginated)
         Pageable pageable = PageRequest.of(page, size);
@@ -75,6 +79,8 @@ public class StudentService {
 
     // -----------------------------------------------------------------------------------------
     // BASIC STUDENT RESPONSE
+    // value=studentsBasic-->cacheName; purpose-->paginated list
+    @Cacheable(value = "studentsBasic", key = "#page + '-' + #size + '-' + #includeCourses")
     public PaginatedResponse<StudentBasicResponse> getBasicStudents(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Student> studentPage = repository.findAll(pageable);
@@ -90,7 +96,10 @@ public class StudentService {
                 studentPage.getTotalPages());
     }
 
+    // ----------------------------------------------------------------------------------------------------
     // Get student By Id
+    // value=studentById-->cacheName; purpose-->single student
+    @Cacheable(value = "studentById", key = "#id")
     public StudentDetailedResponse getStudentById(Integer id) {
         Student student = repository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException("Student not found"));
@@ -102,6 +111,7 @@ public class StudentService {
     // -------------------------------------------------------------------------------------------------
     // Create student
     @Transactional
+    @CacheEvict(value = { "students", "studentById" }, allEntries = true)
     public StudentDetailedResponse createStudent(StudentRequest request) {
         // validating duplicate courses
         if (!validateDuplicateCourses(request.getCourses()))
@@ -119,6 +129,7 @@ public class StudentService {
 
     // Attach course to a student
     @Transactional
+    @CacheEvict(value = { "students", "studentById" }, allEntries = true)
     public StudentDetailedResponse attachCourse(Integer id, CourseRequest courseRequest) {
         Student student = repository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException("Student not found"));
