@@ -5,8 +5,9 @@ public class StudentBasicResponse {
     private String name;
 
     // Default Constructor
-    public StudentBasicResponse() {
-
+    public StudentBasicResponse(Integer id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     // Getters & Setters

@@ -50,7 +50,7 @@ public class StudentMapper {
     }
 
     public static StudentBasicResponse mapEntityToBasic(Student student) {
-        StudentBasicResponse response = new StudentBasicResponse();
+        StudentBasicResponse response = new StudentBasicResponse(student.getId(), student.getName());
 
         response.setId(student.getId());
         response.setName(student.getName());

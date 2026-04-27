@@ -78,9 +78,13 @@ public class StudentService {
     public PaginatedResponse<StudentBasicResponse> getBasicStudents(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Student> studentPage = repository.findAll(pageable);
-        List<Student> students = studentPage.getContent();
+        // List<Student> students = studentPage.getContent();
 
-        List<StudentBasicResponse> responseList = students.stream().map(StudentMapper::mapEntityToBasic).toList();
+        // List<StudentBasicResponse> responseList =
+        // students.stream().map(StudentMapper::mapEntityToBasic).toList();
+
+        List<StudentBasicResponse> responseList = repository.findAllBasic(); // Used Custom Query that directly returns
+                                                                             // dto
 
         return new PaginatedResponse<>(responseList, page, size, studentPage.getTotalElements(),
                 studentPage.getTotalPages());
