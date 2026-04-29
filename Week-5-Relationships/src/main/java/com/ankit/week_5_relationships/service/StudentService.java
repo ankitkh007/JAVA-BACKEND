@@ -130,7 +130,7 @@ public class StudentService {
     // Attach course to a student
     @Transactional
     @CacheEvict(value = { "students", "studentById" }, allEntries = true)
-    public StudentDetailedResponse attachCourse(Integer id, CourseRequest courseRequest) {
+    public StudentDetailedResponse enrollInCourse(Integer id, CourseRequest courseRequest) {
         Student student = repository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException("Student not found"));
 

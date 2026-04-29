@@ -62,11 +62,11 @@ public class StudentController {
                 .body(new ApiResponse<>(201, "Student Created Successfully", response)); // 201 CREATED
     }
 
-    @PostMapping("/{id}/courses")
-    public ResponseEntity<ApiResponse<StudentDetailedResponse>> attachCourse(@PathVariable("id") Integer id,
+    @PostMapping("/{id}/enroll")
+    public ResponseEntity<ApiResponse<StudentDetailedResponse>> enrollInCourse(@PathVariable("id") Integer id,
             @Valid @RequestBody CourseRequest request) {
-        StudentDetailedResponse response = service.attachCourse(id, request);
+        StudentDetailedResponse response = service.enrollInCourse(id, request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ApiResponse<>(201, "Course attached successfully", response));
+                .body(new ApiResponse<>(201, "Course enrolled successfully", response));
     }
 }
