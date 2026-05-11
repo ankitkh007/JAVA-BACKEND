@@ -69,4 +69,15 @@ public class StudentController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiResponse<>(201, "Course enrolled successfully", response));
     }
+
+    // testing API
+    @GetMapping("/public")
+    public String publicAPI() {
+        return "Public API";
+    }
+
+    @GetMapping("/private")
+    public String privateAPI() {
+        return "Private API";
+    }
 }
