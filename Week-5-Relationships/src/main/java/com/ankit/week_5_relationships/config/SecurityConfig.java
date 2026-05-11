@@ -9,16 +9,16 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.ankit.week_5_relationships.service.CustomUserDetailsService;
+
 import static org.springframework.security.config.Customizer.withDefaults;
 
 import jakarta.servlet.FilterChain;
@@ -47,19 +47,18 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    public AuthenticationManager authManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
-        DaoAuthenticationProvider dao = new DaoAuthenticationProvider(userDetailsService);
-        dao.setPasswordEncoder(passwordEncoder);
-
-        return new ProviderManager(dao);
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return new CustomUserDetailsService();
     }
 
     @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user = User.withUsername("ankit").password(passwordEncoder().encode("1234")).roles("USER")
-                .build();
+    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService,
+            PasswordEncoder passwordEncoder) {
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider(userDetailsService);
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
 
-        return new InMemoryUserDetailsManager(user);
+        return new ProviderManager(daoAuthenticationProvider);
     }
 
     @Component
