@@ -74,4 +74,19 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error); // 500 Internal Server Error
     }
+
+    // @ExceptionHandler(UserNameNotFoundException.class)
+    // public ResponseEntity<ErrorResponse>
+    // handleUserrnameException(UserNameNotFoundException ex,
+    // HttpServletRequest request) {
+    // ErrorResponse error = new ErrorResponse();
+    // error.setTimestamp(LocalDateTime.now());
+    // error.setStatus(HttpStatus.UNAUTHORIZED.value());
+    // error.setError("UNAUTHORISED");
+    // error.setMessage(ex.getMessage());
+    // error.setPath(request.getRequestURI());
+
+    // return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error); // 401
+    // Unauthorised
+    // }
 }

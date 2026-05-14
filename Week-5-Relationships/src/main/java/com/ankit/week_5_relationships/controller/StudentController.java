@@ -80,4 +80,5 @@ public class StudentController {
     public String privateAPI() {
         return "Private API";
     }
+
 }

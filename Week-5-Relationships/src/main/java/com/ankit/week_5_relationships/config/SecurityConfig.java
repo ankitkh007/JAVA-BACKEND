@@ -34,7 +34,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable()) // disable for now
                 .authorizeHttpRequests(
-                        auth -> auth.requestMatchers("/students/public/**").permitAll().anyRequest().authenticated())
+                        auth -> auth.requestMatchers("/students/public/**", "/students/authenticate").permitAll()
+                                .anyRequest().authenticated())
                 .httpBasic(withDefaults());
 
         http.addFilterBefore(new CustomLoggingFilter(), UsernamePasswordAuthenticationFilter.class);
